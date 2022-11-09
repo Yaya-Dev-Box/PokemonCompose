@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -27,7 +26,6 @@ import com.yayarh.pokemoncompose.ui.theme.PokemonComposeTheme
 class MainActivity : ComponentActivity() {
 
     // Full catalog tab, search tab, random tab
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +50,7 @@ class MainActivity : ComponentActivity() {
         )
 
 
-        BottomNavigation(backgroundColor = colorResource(id = R.color.teal_200), contentColor = Color.Black) {
+        BottomNavigation {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
@@ -90,7 +88,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: String) {
+    sealed class BottomNavItem(val title: String, val icon: Int, val screen_route: String) {
 
         object Home : BottomNavItem("Home", R.drawable.ic_baseline_menu_book_24, "home")
         object Search : BottomNavItem("Search", R.drawable.ic_baseline_search_24, "search")
