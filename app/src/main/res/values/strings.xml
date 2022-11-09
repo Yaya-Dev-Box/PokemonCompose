@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PokemonCompose</string>
+    <string name="weight_kg">Weight: %s kilograms</string>
+    <string name="height_m">Height: %s meters</string>
+</resources>
