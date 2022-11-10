@@ -3,13 +3,14 @@ package com.yayarh.pokemoncompose.presentation.home
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yayarh.pokemoncompose.presentation.home.HomeVm.HomeState.Idle
-import com.yayarh.pokemoncompose.presentation.home.HomeVm.HomeState.InitialLoading
+import com.yayarh.pokemoncompose.presentation.home.HomeVm.HomeState.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import me.sargunvohra.lib.pokekotlin.client.PokeApiClient
+import me.sargunvohra.lib.pokekotlin.model.NamedApiResource
 import me.sargunvohra.lib.pokekotlin.model.Pokemon
+import java.net.UnknownHostException
 
 class HomeVm : ViewModel() {
 
@@ -21,7 +22,7 @@ class HomeVm : ViewModel() {
     private val _pokemonList = MutableStateFlow(emptyList<Pokemon>())
     val pokemonList = _pokemonList.asStateFlow()
 
-    var isRefreshing = mutableStateOf<Boolean?>(null)
+    var isRefreshing = mutableStateOf(false)
         private set
 
     init {
@@ -29,31 +30,59 @@ class HomeVm : ViewModel() {
     }
 
     fun loadPokemonList(refreshData: Boolean) {
-        if (state.value is HomeState.LoadingMore || state.value is InitialLoading) return
+        if (state.value is LoadingMore || state.value is InitialLoading) return
 
-        if (refreshData && pokemonList.value.isNotEmpty()) isRefreshing.value =
-            true // If "isRefreshing" is null, tha means we haven't loaded anything yet
+        /* If we are refreshing the list while it is not empty, that means the refresh was triggered by the user */
+        if (refreshData && pokemonList.value.isNotEmpty()) isRefreshing.value = true
+        _state.value = if (refreshData) InitialLoading else LoadingMore
 
         viewModelScope.launch(Dispatchers.IO) {
-            _state.value = if (refreshData) InitialLoading else HomeState.LoadingMore
-            val currentList = if (refreshData) emptyList() else pokemonList.value
+            try {
+                val currentList = if (refreshData) emptyList() else pokemonList.value
 
-            delay(1500)
+                println("Querying data: starting from pokemon ${currentList.size}")
+                val remoteList = client.getPokemonList(currentList.size, 10).results
 
-            println("Querying data: starting from pokemon ${currentList.size}")
+                _pokemonList.value = currentList + fetchPokemonsDetails(remoteList)
 
-            val pokemon = client.getPokemonList(currentList.size, 10).results
+                _state.value = Idle
+                isRefreshing.value = false
 
-            _pokemonList.value = currentList + pokemon.map { async { client.getPokemon(it.id) } }.awaitAll()
-            _state.value = Idle
-            isRefreshing.value = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val errorMsg = when (e) {
+                    is UnknownHostException -> "Cannot connect to the server, please check your internet connection and try again"
+                    is CancellationException -> "Request cancelled"
+                    else -> "Unknown error"
+                }
+
+                _state.value = Failure(errorMsg)
+            }
         }
+    }
+
+    private suspend fun fetchPokemonsDetails(resList: List<NamedApiResource>): List<Pokemon> {
+        return runBlocking {
+            return@runBlocking try {
+                val tasks = mutableListOf<Deferred<Pokemon>>()
+                resList.forEach { tasks.add(async { client.getPokemon(it.id) }) }
+                tasks.awaitAll()
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
+    }
+
+
+    fun setIdleState() {
+        _state.value = Idle
     }
 
     sealed interface HomeState {
         object InitialLoading : HomeState
         object Idle : HomeState
         object LoadingMore : HomeState
+        class Failure(val msg: String) : HomeState
     }
 
 }

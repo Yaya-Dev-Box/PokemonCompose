@@ -1,5 +1,6 @@
 package com.yayarh.pokemoncompose.presentation.home
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedHeight
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedWeight
+import com.yayarh.pokemoncompose.presentation.home.HomeVm.HomeState
 import me.sargunvohra.lib.pokekotlin.model.Pokemon
 
 @Composable
@@ -48,9 +50,9 @@ fun HomeScreen(vm: HomeVm = viewModel()) {
         )
 
         Box {
-            if (state is HomeVm.HomeState.InitialLoading) CircularProgressIndicator(modifier = Modifier.align(Center))
+            if (state is HomeState.InitialLoading) CircularProgressIndicator(modifier = Modifier.align(Center))
 
-            SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = vm.isRefreshing.value ?: false), onRefresh = { vm.loadPokemonList(true) }) {
+            SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = vm.isRefreshing.value), onRefresh = { vm.loadPokemonList(true) }) {
 
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     itemsIndexed(pokemonList) { index, pokemon ->
@@ -60,7 +62,12 @@ fun HomeScreen(vm: HomeVm = viewModel()) {
                 }
             }
 
-            if (state is HomeVm.HomeState.LoadingMore) Text(
+            if (state is HomeState.Failure) {
+                Toast.makeText(LocalContext.current, state.msg, Toast.LENGTH_SHORT).show()
+                vm.setIdleState()
+            }
+
+            if (state is HomeState.LoadingMore) Text(
                 text = "Loading more...",
                 Modifier
                     .align(BottomCenter)
