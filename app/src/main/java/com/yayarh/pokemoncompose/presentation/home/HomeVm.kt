@@ -1,5 +1,6 @@
 package com.yayarh.pokemoncompose.presentation.home
 
+import android.accounts.NetworkErrorException
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import me.sargunvohra.lib.pokekotlin.client.PokeApiClient
 import me.sargunvohra.lib.pokekotlin.model.NamedApiResource
 import me.sargunvohra.lib.pokekotlin.model.Pokemon
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class HomeVm : ViewModel() {
@@ -51,7 +53,7 @@ class HomeVm : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 val errorMsg = when (e) {
-                    is UnknownHostException -> "Cannot connect to the server, please check your internet connection and try again"
+                    is UnknownHostException, is SocketTimeoutException, is NetworkErrorException -> "Cannot connect to the server, please check your internet connection and try again"
                     is CancellationException -> "Request cancelled"
                     else -> "Unknown error"
                 }
