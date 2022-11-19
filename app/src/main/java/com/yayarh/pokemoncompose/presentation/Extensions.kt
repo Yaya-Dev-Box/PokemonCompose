@@ -15,7 +15,6 @@ object Extensions {
 
     fun Pokemon.getFormattedHeight(ctx: Context): String {
         val heightInMeters = (height.toFloat() / 10)
-
         return ctx.getString(R.string.height_m, heightInMeters.roundToTwoDigits())
     }
 

@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -32,6 +31,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedHeight
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedWeight
 import com.yayarh.pokemoncompose.presentation.home.HomeVm.HomeState
+import com.yayarh.pokemoncompose.ui.theme.primaryYellowVariant
 import me.sargunvohra.lib.pokekotlin.model.NamedApiResource
 import me.sargunvohra.lib.pokekotlin.model.Pokemon
 import me.sargunvohra.lib.pokekotlin.model.PokemonSprites
@@ -80,7 +80,7 @@ fun HomeScreen(vm: HomeVm = hiltViewModel()) {
                 Modifier
                     .align(BottomCenter)
                     .fillMaxWidth()
-                    .background(Color.LightGray)
+                    .background(primaryYellowVariant)
                     .padding(8.dp),
                 textAlign = TextAlign.Center
             )
@@ -95,7 +95,6 @@ fun PokemonItem(pokemon: Pokemon) {
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { },
-        backgroundColor = Color.LightGray,
         elevation = 10.dp
     ) {
         Row {

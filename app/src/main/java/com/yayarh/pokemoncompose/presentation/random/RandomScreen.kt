@@ -1,5 +1,6 @@
 package com.yayarh.pokemoncompose.presentation.random
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
@@ -25,6 +26,7 @@ import com.yayarh.pokemoncompose.R
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedHeight
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedWeight
 import com.yayarh.pokemoncompose.presentation.random.RandomVm.RandomState
+import com.yayarh.pokemoncompose.ui.theme.primaryYellow
 import me.sargunvohra.lib.pokekotlin.model.*
 
 
@@ -35,21 +37,19 @@ fun RandomScreen(vm: RandomVm = hiltViewModel()) {
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        if (state is RandomState.Loading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
+        if (state is RandomState.Loading) CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 
-        PokeDetailsScreen(pokemon = pokemon)
+        pokemon?.let { PokeDetailsScreen(pokemon = it) }
 
         if (state !is RandomState.Loading) {
             FloatingActionButton(
                 onClick = vm::getRandomPokemon,
-                backgroundColor = Color.LightGray,
+                backgroundColor = primaryYellow,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
             ) {
-                Text(text = "Reload")
+                Image(painter = painterResource(id = R.drawable.ic_baseline_restart_alt_24), contentDescription = "Random")
             }
         }
 
@@ -57,7 +57,7 @@ fun RandomScreen(vm: RandomVm = hiltViewModel()) {
 }
 
 @Composable
-fun PokeDetailsScreen(pokemon: Pokemon?) {
+fun PokeDetailsScreen(pokemon: Pokemon) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -72,39 +72,36 @@ fun PokeDetailsScreen(pokemon: Pokemon?) {
             fontSize = 24.sp
         )
 
-        pokemon?.let {
-            Text(
-                text = it.name,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                fontSize = 32.sp
-            )
+        Text(
+            text = pokemon.name,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            textAlign = TextAlign.Center,
+            fontSize = 32.sp
+        )
 
-            AsyncImage(
-                model = it.sprites.frontDefault,
-                contentDescription = null,
-                placeholder = if (LocalInspectionMode.current) painterResource(R.drawable.pikachuu_sprite) else null,
-                modifier = Modifier.size(256.dp)
-            )
+        AsyncImage(
+            model = pokemon.sprites.frontDefault,
+            contentDescription = null,
+            placeholder = if (LocalInspectionMode.current) painterResource(R.drawable.pikachuu_sprite) else null,
+            modifier = Modifier.size(256.dp)
+        )
 
-            Text(text = it.getFormattedWeight(LocalContext.current))
-            Text(text = it.getFormattedHeight(LocalContext.current))
+        Text(text = pokemon.getFormattedWeight(LocalContext.current))
+        Text(text = pokemon.getFormattedHeight(LocalContext.current))
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = "Stats:", fontWeight = FontWeight.Bold)
-            it.stats.forEach { pokeStat ->
-                Text(text = pokeStat.stat.name.replaceFirstChar(Char::titlecase) + ": " + pokeStat.baseStat)
-            }
+        Text(text = "Stats:", fontWeight = FontWeight.Bold)
+        pokemon.stats.forEach { pokeStat ->
+            Text(text = pokeStat.stat.name.replaceFirstChar(Char::titlecase) + ": " + pokeStat.baseStat)
+        }
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = "Abilities:", fontWeight = FontWeight.Bold)
-            it.abilities.forEach { pokeAbility ->
-                Text(text = pokeAbility.ability.name.replaceFirstChar(Char::titlecase))
-            }
-
+        Text(text = "Abilities:", fontWeight = FontWeight.Bold)
+        pokemon.abilities.forEach { pokeAbility ->
+            Text(text = pokeAbility.ability.name.replaceFirstChar(Char::titlecase))
         }
     }
 }
