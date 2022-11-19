@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -37,7 +37,7 @@ import me.sargunvohra.lib.pokekotlin.model.Pokemon
 import me.sargunvohra.lib.pokekotlin.model.PokemonSprites
 
 @Composable
-fun HomeScreen(vm: HomeVm = viewModel()) {
+fun HomeScreen(vm: HomeVm = hiltViewModel()) {
     val state = vm.state.collectAsState().value
     val pokemonList by vm.pokemonList.collectAsState()
 
@@ -57,7 +57,10 @@ fun HomeScreen(vm: HomeVm = viewModel()) {
         Box {
             if (state is HomeState.InitialLoading) CircularProgressIndicator(modifier = Modifier.align(Center))
 
-            SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = vm.isRefreshing.value), onRefresh = { vm.loadPokemonList(true) }) {
+            /* If we are refreshing the list while it is not empty, that means the refresh was triggered by the user */
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(isRefreshing = state is HomeState.InitialLoading && pokemonList.isNotEmpty()),
+                onRefresh = { vm.loadPokemonList(true) }) {
 
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     itemsIndexed(pokemonList) { index, pokemon ->

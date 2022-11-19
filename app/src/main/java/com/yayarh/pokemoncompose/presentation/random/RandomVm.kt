@@ -4,24 +4,25 @@ import android.accounts.NetworkErrorException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yayarh.pokemoncompose.presentation.random.RandomVm.RandomState.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import me.sargunvohra.lib.pokekotlin.client.PokeApiClient
+import me.sargunvohra.lib.pokekotlin.client.PokeApi
 import me.sargunvohra.lib.pokekotlin.model.Pokemon
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import javax.inject.Inject
 import kotlin.random.Random
 
-class RandomVm : ViewModel() {
+@HiltViewModel
+class RandomVm @Inject constructor(private val client: PokeApi) : ViewModel() {
 
     companion object {
         const val MAXIMUM_NUMBER_OF_POKEMONS = 904
     }
-
-    private val client = PokeApiClient()
 
     private val _state = MutableStateFlow<RandomState>(Idle)
     val state = _state.asStateFlow()

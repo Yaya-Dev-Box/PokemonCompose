@@ -1,31 +1,28 @@
 package com.yayarh.pokemoncompose.presentation.home
 
 import android.accounts.NetworkErrorException
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yayarh.pokemoncompose.presentation.home.HomeVm.HomeState.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import me.sargunvohra.lib.pokekotlin.client.PokeApiClient
+import me.sargunvohra.lib.pokekotlin.client.PokeApi
 import me.sargunvohra.lib.pokekotlin.model.NamedApiResource
 import me.sargunvohra.lib.pokekotlin.model.Pokemon
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import javax.inject.Inject
 
-class HomeVm : ViewModel() {
-
-    private val client = PokeApiClient()
+@HiltViewModel
+class HomeVm @Inject constructor(private val client: PokeApi) : ViewModel() {
 
     private val _state = MutableStateFlow<HomeState>(Idle)
     val state = _state.asStateFlow()
 
     private val _pokemonList = MutableStateFlow(emptyList<Pokemon>())
     val pokemonList = _pokemonList.asStateFlow()
-
-    var isRefreshing = mutableStateOf(false)
-        private set
 
     init {
         loadPokemonList(refreshData = true)
@@ -34,8 +31,6 @@ class HomeVm : ViewModel() {
     fun loadPokemonList(refreshData: Boolean) {
         if (state.value is LoadingMore || state.value is InitialLoading) return
 
-        /* If we are refreshing the list while it is not empty, that means the refresh was triggered by the user */
-        if (refreshData && pokemonList.value.isNotEmpty()) isRefreshing.value = true
         _state.value = if (refreshData) InitialLoading else LoadingMore
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -48,7 +43,6 @@ class HomeVm : ViewModel() {
                 _pokemonList.value = currentList + fetchPokemonsDetails(remoteList)
 
                 _state.value = Idle
-                isRefreshing.value = false
 
             } catch (e: Exception) {
                 e.printStackTrace()

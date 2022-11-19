@@ -22,10 +22,10 @@ import com.yayarh.pokemoncompose.presentation.home.HomeScreen
 import com.yayarh.pokemoncompose.presentation.random.RandomScreen
 import com.yayarh.pokemoncompose.presentation.search.SearchScreen
 import com.yayarh.pokemoncompose.ui.theme.PokemonComposeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    // Full catalog tab, search tab, random tab
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
