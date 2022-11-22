@@ -7,7 +7,6 @@ import com.yayarh.pokemoncompose.presentation.random.RandomVm.RandomState.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -44,7 +43,6 @@ class RandomVm @Inject constructor(private val client: PokeApi) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.value = Loading
-                delay(1000)
                 _pokemon.value = client.getPokemon(randomId)
                 _state.value = Idle
 

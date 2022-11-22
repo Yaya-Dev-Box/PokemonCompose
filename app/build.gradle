@@ -19,7 +19,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.yayarh.pokemoncompose.CustomTestRunner"
         vectorDrawables {
             useSupportLibrary true
         }
@@ -71,17 +71,21 @@ dependencies {
 
     implementation 'com.github.PokeAPI:pokekotlin:2.3.1'
     implementation 'androidx.navigation:navigation-runtime-ktx:2.5.3'
-    implementation "androidx.navigation:navigation-compose:2.6.0-alpha03"
+    implementation "androidx.navigation:navigation-compose:2.6.0-alpha04"
     implementation "io.coil-kt:coil-compose:2.0.0"
 
     implementation "com.google.dagger:hilt-android:2.44"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
     kapt "com.google.dagger:hilt-compiler:2.44"
 
+
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
     androidTestImplementation 'io.kotest:kotest-assertions-core:5.5.4'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"

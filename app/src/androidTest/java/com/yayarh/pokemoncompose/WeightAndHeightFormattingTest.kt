@@ -12,6 +12,8 @@ import org.junit.Test
 
 class WeightAndHeightFormattingTest {
 
+    //TODO: Fix flaky tests
+
     private val ctx = ApplicationProvider.getApplicationContext<Context>()
 
     private val dummyPokemon = Pokemon(

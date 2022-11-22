@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +39,10 @@ fun RandomScreen(vm: RandomVm = hiltViewModel()) {
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        if (state is RandomState.Loading) CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        if (state is RandomState.Loading) CircularProgressIndicator(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .semantics { contentDescription = "Loading" })
 
         pokemon?.let { PokeDetailsScreen(pokemon = it) }
 
