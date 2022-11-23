@@ -5,9 +5,6 @@ import androidx.test.core.app.ApplicationProvider
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedHeight
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedWeight
 import io.kotest.matchers.shouldBe
-import me.sargunvohra.lib.pokekotlin.model.NamedApiResource
-import me.sargunvohra.lib.pokekotlin.model.Pokemon
-import me.sargunvohra.lib.pokekotlin.model.PokemonSprites
 import org.junit.Test
 
 class WeightAndHeightFormattingTest {
@@ -15,26 +12,7 @@ class WeightAndHeightFormattingTest {
     //TODO: Fix flaky tests
 
     private val ctx = ApplicationProvider.getApplicationContext<Context>()
-
-    private val dummyPokemon = Pokemon(
-        id = 1,
-        name = "Buu",
-        abilities = emptyList(),
-        baseExperience = 50,
-        gameIndices = emptyList(),
-        height = 50,
-        weight = 70,
-        isDefault = true,
-        order = 2,
-        species = NamedApiResource(name = "Pokemon", category = "None", id = 5),
-        heldItems = emptyList(),
-        forms = emptyList(),
-        sprites = PokemonSprites(null, null, null, null, null, null, null, null),
-        stats = emptyList(),
-        moves = emptyList(),
-        types = emptyList()
-    )
-
+    private val dummyPokemon = Utils.dummyPokemon
 
     @Test
     fun weightFormattingIsCorrect() {

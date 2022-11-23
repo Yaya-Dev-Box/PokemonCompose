@@ -15,7 +15,7 @@ object DI {
     object ClientModule {
         @Singleton
         @Provides
-        fun providePokeApiClient(): PokeApi = PokeApiClient()
+        fun providePokeApi(): PokeApi = PokeApiClient()
     }
 
 }

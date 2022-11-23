@@ -7,8 +7,12 @@ import com.yayarh.pokemoncompose.presentation.random.RandomVm
 import com.yayarh.pokemoncompose.ui.theme.PokemonComposeTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.*
 import me.sargunvohra.lib.pokekotlin.client.PokeApi
+import me.sargunvohra.lib.pokekotlin.model.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,8 +22,9 @@ import javax.inject.Inject
 @HiltAndroidTest
 class RandomScreenTest {
 
-    @get:Rule(order = 0) val hiltRule = HiltAndroidRule(this)
-    @get:Rule(order = 1) val composeTestRule = createComposeRule()
+    @get:Rule val hiltRule = HiltAndroidRule(this)
+    @get:Rule val composeTestRule = createComposeRule()
+    @get:Rule val mockkRule = MockKRule(this)
 
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
 
@@ -28,22 +33,27 @@ class RandomScreenTest {
     @Before
     fun setup() {
         hiltRule.inject()
+        setupMocks()
+
         composeTestRule.setContent {
             PokemonComposeTheme {
                 RandomScreen(vm = RandomVm(testingClient))
             }
         }
+
     }
 
     @Test
     fun testNodesVisibility(): Unit = runBlocking {
         launch(mainThreadSurrogate) {
-            repeat(100) {
-                composeTestRule.onNodeWithContentDescription("Random").assertIsDisplayed().performClick()
-                composeTestRule.onNodeWithText("Buu").assertExists().assertIsDisplayed()
-            }
+            composeTestRule.onNodeWithText("Buu").assertExists().assertIsDisplayed()
+            composeTestRule.onNodeWithContentDescription("Random").assertIsDisplayed().performClick()
         }
     }
 
+    private fun setupMocks() {
+        MockKAnnotations.init(this)
+        every { testingClient.getPokemon(any()) } returns Utils.dummyPokemon
+    }
 
 }
