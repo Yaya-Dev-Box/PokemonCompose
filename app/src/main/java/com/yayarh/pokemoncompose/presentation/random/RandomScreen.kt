@@ -8,7 +8,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,19 +33,21 @@ import me.sargunvohra.lib.pokekotlin.model.*
 
 @Composable
 fun RandomScreen(vm: RandomVm = hiltViewModel()) {
-    val state = vm.state.collectAsState().value
-    val pokemon by vm.pokemon.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
+        val state = vm.state.collectAsState().value
 
-        if (state is RandomState.Loading) CircularProgressIndicator(
-            modifier = Modifier
+        if (state is RandomState.PokemonLoaded) PokeDetailsScreen(pokemon = state.pokemon)
+
+        if (state is RandomState.Failure) Text(text = state.msg, modifier = Modifier.align(Alignment.Center), textAlign = TextAlign.Center)
+
+        if (state is RandomState.Loading) {
+            CircularProgressIndicator(modifier = Modifier
                 .align(Alignment.Center)
                 .semantics { contentDescription = "Loading" })
+        }
 
-        pokemon?.let { PokeDetailsScreen(pokemon = it) }
-
-        if (state !is RandomState.Loading) {
+        if (state is RandomState.PokemonLoaded || state is RandomState.Failure) {
             FloatingActionButton(
                 onClick = vm::getRandomPokemon,
                 backgroundColor = primaryYellow,
