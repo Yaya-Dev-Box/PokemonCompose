@@ -25,19 +25,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedHeight
 import com.yayarh.pokemoncompose.presentation.Extensions.getFormattedWeight
+import com.yayarh.pokemoncompose.presentation.destinations.DetailsScreenDestination
 import com.yayarh.pokemoncompose.presentation.home.HomeVm.HomeState
 import com.yayarh.pokemoncompose.ui.theme.primaryYellowVariant
 import me.sargunvohra.lib.pokekotlin.model.NamedApiResource
 import me.sargunvohra.lib.pokekotlin.model.Pokemon
 import me.sargunvohra.lib.pokekotlin.model.PokemonSprites
 
+@Destination(start = true)
 @Composable
-fun HomeScreen(vm: HomeVm = hiltViewModel()) {
+fun HomeScreen(vm: HomeVm = hiltViewModel(), navigator: NavController) {
     val state = vm.state.collectAsState().value
     val pokemonList by vm.pokemonList.collectAsState()
 
@@ -65,7 +70,7 @@ fun HomeScreen(vm: HomeVm = hiltViewModel()) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     itemsIndexed(pokemonList) { index, pokemon ->
                         if (index == pokemonList.lastIndex) vm.loadPokemonList(false)
-                        PokemonItem(pokemon = pokemon)
+                        PokemonItem(pokemon = pokemon) { id -> navigator.navigate(DetailsScreenDestination(pokemonId = id)) }
                     }
                 }
             }
@@ -89,12 +94,12 @@ fun HomeScreen(vm: HomeVm = hiltViewModel()) {
 }
 
 @Composable
-fun PokemonItem(pokemon: Pokemon) {
+fun PokemonItem(pokemon: Pokemon, onClick: (pokemonId: Int) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { },
+            .clickable { onClick(pokemon.id) },
         elevation = 10.dp
     ) {
         Row {
@@ -144,5 +149,5 @@ fun PokemonItemPreview() {
         types = emptyList()
     )
 
-    PokemonItem(pokemon = previewPokemon)
+    PokemonItem(pokemon = previewPokemon) {}
 }
