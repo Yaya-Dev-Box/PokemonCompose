@@ -13,6 +13,6 @@ Android app made with Kotlin and Jetpack Compose that shows the list of Pokemons
 
 ## Screenshots:
 
-[Screenshot 1](Screenshot_20221218_134703.png)
+![Screenshot 1](Screenshot_20221218_134703.png)
 
-[Screenshot 2](Screenshot_20221218_134722.png)
+![Screenshot 2](Screenshot_20221218_134722.png)
